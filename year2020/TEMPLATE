@@ -1,0 +1,19 @@
+from typing import List
+
+
+def part1(inp: List[str]) -> int:
+    return 0
+
+
+def part2(inp: List[str]) -> int:
+    return 0
+
+
+def test_part1():
+    inp = """"""
+    assert part1(inp.splitlines()) == 1
+
+
+def test_part2():
+    inp = """"""
+    assert part2(inp.splitlines()) == 1
