@@ -60,6 +60,10 @@ for day in days:
         print(f" {day:2}  |  {part}   |", end=" ")
         result, duration = run(day, part)
         durations.append(duration)
-        print(f" {duration:6.4f}  | {result}")
+        print(f" {duration:6.4f}", end="")
+        if "hide" in "".join(argv):
+            print(f"  | <redacted>")
+        else:
+            print(f"  | {result}")
 
 print(f"\n Total duration for all parts: {sum(durations):6.4f}")
