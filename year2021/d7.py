@@ -5,13 +5,14 @@ import numpy as np
 def solve(inputs: str, fuel_cost: Callable[[np.array], np.array]) -> int:
     crabs = np.array(inputs.split(",")).astype(np.int32)
     m = int(np.mean(crabs))
-    xs = np.array([m-2, m-1, m, m+1, m+2])
+    med = np.median(crabs)
+    xs = np.array([m-1, m, m+1, med])
     distances = np.abs(crabs - xs[:, np.newaxis])
     return fuel_cost(distances).min()
 
 
 def p1(inputs: str) -> int:
-    return solve(inputs, fuel_cost=lambda d: d.sum(axis=1))
+    return solve(inputs, fuel_cost=lambda d: d.sum(axis=1).astype(np.int32))
 
 
 def p2(inputs: str) -> int:
