@@ -4,7 +4,8 @@ import numpy as np
 
 def solve(inputs: str, fuel_cost: Callable[[np.array], np.array]) -> int:
     crabs = np.array(inputs.split(",")).astype(np.int32)
-    xs = np.arange(crabs.min(), crabs.max() + 1)
+    m = int(np.mean(crabs))
+    xs = np.array([m-2, m-1, m, m+1, m+2])
     distances = np.abs(crabs - xs[:, np.newaxis])
     return fuel_cost(distances).min()
 
