@@ -18,7 +18,10 @@ def draw_line(ary, p1, p2):
 
 
 def solve(inputs, hv_only: bool) -> int:
-    lines = [[[int(x) for x in s.split(",")] for s in line.split("->")] for line in inputs.splitlines()]
+    lines = [
+        [[int(x) for x in s.split(",")] for s in line.split("->")]
+        for line in inputs.splitlines()
+    ]
     if hv_only:
         lines = np.array([l for l in lines if l[0][0] == l[1][0] or l[0][1] == l[1][1]])
     else:

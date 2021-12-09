@@ -1,9 +1,13 @@
 from collections import Counter, deque
 
 
-def simulate(inputs: str, doubling_time: int, n_days: int, days_to_sexual_maturity: int):
+def simulate(
+    inputs: str, doubling_time: int, n_days: int, days_to_sexual_maturity: int
+):
     counts = Counter(int(i) for i in inputs.split(","))
-    state = deque((counts[i] for i in range(doubling_time + 1)), maxlen=doubling_time + 1)
+    state = deque(
+        (counts[i] for i in range(doubling_time + 1)), maxlen=doubling_time + 1
+    )
     for _ in range(n_days):
         state[-days_to_sexual_maturity] += state[0]
         state.rotate(-1)

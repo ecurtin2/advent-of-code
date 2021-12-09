@@ -19,7 +19,9 @@ def p1(inputs: str) -> int:
 
 def p2(inputs: str) -> int:
     # fuel cost in p2 is the d'th triangular number
-    return solve(inputs, fuel_cost=lambda d: (d * (d + 1) / 2).astype(np.int32).sum(axis=1))
+    return solve(
+        inputs, fuel_cost=lambda d: (d * (d + 1) / 2).astype(np.int32).sum(axis=1)
+    )
 
 
 def test_p1():

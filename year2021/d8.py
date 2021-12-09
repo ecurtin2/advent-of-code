@@ -1,59 +1,92 @@
 from collections import Counter
+from typing import Callable, TypeVar
 import pytest
+
+T = TypeVar("T")
+Splitter = Callable[[T, list[T]], int]
+
+
+class Decoder:
+    """Decoder to translate from one basis to another
+
+    The decoder is initialized in a given basis, then when .fit is called,
+    it will generate a mapping from the basis in .fit to the basis in __init__.
+    Then the transform method will transform new input from the .fit basis to the
+    __init__ basis.
+
+    The splitter functions must be independent of basis and the tuple of results of applying
+    them to each value must uniquely identify that value.
+    """
+    def __init__(self, reference: list[T], splitters: list[Splitter]):
+        self.ref = reference
+        self.splitters = splitters
+
+        self.table = dict()
+        self.decoder = None
+
+        # Create a lookup table based on output of splitter functions
+        for i, val in enumerate(self.ref):
+            k = tuple(splitter(val, self.ref) for splitter in self.splitters)
+            self.table[k] = i
+
+        # If results of splitters are non unique (to fix, add more splitters!)
+        if len(self.ref) != len(self.table):
+            raise ValueError(f"Splitters not sufficient to split")
+
+    def fit(self, values: list[T]):
+        self.decoder = {}
+        for val in values:
+            k = tuple(splitter(val, values) for splitter in self.splitters)
+            self.decoder["".join(sorted(val))] = self.table[k]
+        return self
+
+    def transform(self, values: list[T]):
+        if self.decoder is None:
+            raise ValueError(f"Need to fit on values before transform!")
+        return [self.decoder["".join(sorted(v))] for v in values]
+
+
+def join_digits(x: list[int]) -> int:
+    return int("".join(map(str, x)))
+
+
+def split_strip(s: str) -> list[str]:
+    return [chunk.strip() for chunk in s.split()]
+
+
+decoder = Decoder(
+    reference=[
+        "abcefg",
+        "cf",
+        "acdeg",
+        "acdfg",
+        "bcdf",
+        "abdfg",
+        "abdefg",
+        "acf",
+        "abcdefg",
+        "abcdfg",
+    ],
+    splitters=[
+        lambda val, rest: len(val),
+        lambda val, rest: sum(set(val).issubset(set(r)) for r in rest),
+        lambda val, rest: sum(set(val).issuperset(set(r)) for r in rest),
+    ],
+)
 
 
 def p1(inputs: str) -> int:
     in_out = [l.split("|") for l in inputs.splitlines()]
-    outs = [x.strip() for l in in_out for x in l[1].split()]
-    counts = Counter(len(o) for o in outs)
-    return counts[2] + counts[3] + counts[4] + counts[7]
+    counts = Counter(digit for i, o in in_out for digit in decoder.fit(split_strip(i)).transform(split_strip(o)))
+    return counts[1] + counts[4] + counts[7] + counts[8]
 
 
 def p2(inputs: str) -> int:
     in_out = [l.split("|") for l in inputs.splitlines()]
-    all_outputs = []
-    for inputs, outputs in in_out:
-        glyphs = [set(g) for g in inputs.split()]
-        glyph_mapper = dict()
-        for g in glyphs:
-            l = len(g)
-            if l == 2:
-                glyph_mapper[1] = g
-            elif l == 4:
-                glyph_mapper[4] = g
-            elif l == 3:
-                glyph_mapper[7] = g
-            elif l == 7:
-                glyph_mapper[8] = g
-
-        for g in glyphs:
-            l = len(g)
-            if l == 6:  # 6, 9, 0
-                if not glyph_mapper[7].issubset(g):
-                    glyph_mapper[6] = g
-                if glyph_mapper[4].issubset(g):
-                    glyph_mapper[9] = g
-                if glyph_mapper[7].issubset(g) and not glyph_mapper[4].issubset(g):
-                    glyph_mapper[0] = g
-            if l == 5:  # 2, 3, 5
-                if glyph_mapper[7].issubset(g):
-                    glyph_mapper[3] = g
-                if len(g - glyph_mapper[4]) == 3:
-                    glyph_mapper[2] = g
-                if len(g - glyph_mapper[4]) == 2 and not glyph_mapper[7].issubset(g):
-                    glyph_mapper[5] = g
-
-        def decode(s: str) -> int:
-            for k, v in glyph_mapper.items():
-                if set(s) == v:
-                    return k
-            raise KeyError(s)
-
-        output_nums = [decode(g.strip()) for g in outputs.split()]
-        output_num = int("".join(str(n) for n in output_nums))
-        all_outputs.append(output_num)
-
-    return sum(all_outputs)
+    return sum(
+        join_digits(decoder.fit(split_strip(i)).transform(split_strip(o)))
+        for i, o in in_out
+    )
 
 
 @pytest.fixture()
@@ -75,7 +108,12 @@ def test_p1(example):
 
 
 def test_p2_1():
-    assert p2("""acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf""") == 5353
+    assert (
+        p2(
+            """acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"""
+        )
+        == 5353
+    )
 
 
 def test_p2(example):

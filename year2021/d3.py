@@ -3,7 +3,7 @@ from operator import ge, lt
 
 
 def bits_to_int(bits: list[int]) -> int:
-    return int(''.join(map(str, bits)), 2)
+    return int("".join(map(str, bits)), 2)
 
 
 def p1(data: list[str]) -> int:
@@ -41,7 +41,6 @@ def p2(data: list[str]) -> int:
                 result[k] = bits_to_int(ary[idx])
 
     return result["o2"] * result["co2"]
-
 
 
 def test_p1():
