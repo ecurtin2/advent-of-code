@@ -17,6 +17,7 @@ class Decoder:
     The splitter functions must be independent of basis and the tuple of results of applying
     them to each value must uniquely identify that value.
     """
+
     def __init__(self, reference: list[T], splitters: list[Splitter]):
         self.ref = reference
         self.splitters = splitters
@@ -77,7 +78,11 @@ decoder = Decoder(
 
 def p1(inputs: str) -> int:
     in_out = [l.split("|") for l in inputs.splitlines()]
-    counts = Counter(digit for i, o in in_out for digit in decoder.fit(split_strip(i)).transform(split_strip(o)))
+    counts = Counter(
+        digit
+        for i, o in in_out
+        for digit in decoder.fit(split_strip(i)).transform(split_strip(o))
+    )
     return counts[1] + counts[4] + counts[7] + counts[8]
 
 
