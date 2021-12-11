@@ -3,16 +3,7 @@ import numpy as np
 from math import prod
 from functools import lru_cache
 
-
-def neighbors(i, j, i_max, j_max):
-    if i < i_max - 1:
-        yield i + 1, j
-    if i > 0:
-        yield i - 1, j
-    if j < j_max - 1:
-        yield i, j + 1
-    if j > 0:
-        yield i, j - 1
+from extra_itertools import neighbors
 
 
 def local_mins(ary):
