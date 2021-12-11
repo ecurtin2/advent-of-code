@@ -4,7 +4,7 @@ from extra_itertools import neighbors
 from typing import Generator
 
 
-def solve(octopi) -> Generator[np.ndarray, None, None]:
+def simulate(octopi) -> Generator[np.ndarray, None, None]:
     i_max, j_max = octopi.shape
     flash_at = 9
     while True:
@@ -26,16 +26,53 @@ def solve(octopi) -> Generator[np.ndarray, None, None]:
 
 def p1(inputs: str) -> int:
     octopi = np.array([[int(i) for i in row] for row in inputs.splitlines()])
-    flashes_gen = solve(octopi)
-    return sum((next(flashes_gen) == 0).sum() for _ in range(100))
+    iterations = simulate(octopi)
+    return sum((next(iterations) == 0).sum() for _ in range(100))
 
 
 def p2(inputs: str) -> int:
     octopi = np.array([[int(i) for i in row] for row in inputs.splitlines()])
-    flashes_gen = solve(octopi)
-    for i, octopi in enumerate(flashes_gen):
+    iterations = simulate(octopi)
+    for i, octopi in enumerate(iterations):
         if np.all(octopi == 0):
             return i + 1
+
+
+def animate():
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from matplotlib import animation
+
+    fig = plt.figure()
+    plt.axis("off")
+
+    np.random.seed(seed=521)
+    octopi = np.random.randint(low=1, high=9, size=(100, 100))
+    im = plt.imshow(octopi, vmin=0, vmax=1, cmap='afmhot')
+
+    power = 5
+    def init():
+        im.set_data((octopi / 9) ** power)
+        return [im]
+
+    iterations = simulate(octopi)
+    def animate(i):
+        title = plt.title(f"Step {i+1}")
+        plt.setp(title, color='w')
+        data = (next(iterations) / 9) ** power
+        im.set_array(data)
+        return [im]
+
+    anim = animation.FuncAnimation(
+        fig,
+        animate,
+        interval=45,
+        init_func=init,
+        frames=500,
+        repeat=False,
+        blit=True
+    )
+    anim.save("octopi.mp4", savefig_kwargs={'facecolor': '#000000'})
 
 
 @pytest.fixture()
@@ -58,3 +95,7 @@ def test_p1(example):
 
 def test_p2(example):
     assert p2(example) == 195
+
+
+if __name__ == "__main__":
+    animate()
