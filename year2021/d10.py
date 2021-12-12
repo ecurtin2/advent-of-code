@@ -26,7 +26,7 @@ def p1(inputs: str) -> int:
 
 def p2(inputs: str) -> int:
     results = (get_first_line_error(line) for line in inputs.splitlines())
-    completions = (''.join(r) for err, r in results if err == 0)
+    completions = ("".join(r) for err, r in results if err == 0)
     points = {")": 1, "]": 2, "}": 3, ">": 4}
     scores = (reduce(lambda t, c: t * 5 + points[c], s, 0) for s in completions)
     return median(scores)

@@ -48,31 +48,27 @@ def animate():
 
     np.random.seed(seed=521)
     octopi = np.random.randint(low=1, high=9, size=(100, 100))
-    im = plt.imshow(octopi, vmin=0, vmax=1, cmap='afmhot')
+    im = plt.imshow(octopi, vmin=0, vmax=1, cmap="afmhot")
 
     power = 5
+
     def init():
         im.set_data((octopi / 9) ** power)
         return [im]
 
     iterations = simulate(octopi)
+
     def animate(i):
         title = plt.title(f"Step {i+1}")
-        plt.setp(title, color='w')
+        plt.setp(title, color="w")
         data = (next(iterations) / 9) ** power
         im.set_array(data)
         return [im]
 
     anim = animation.FuncAnimation(
-        fig,
-        animate,
-        interval=45,
-        init_func=init,
-        frames=500,
-        repeat=False,
-        blit=True
+        fig, animate, interval=45, init_func=init, frames=500, repeat=False, blit=True
     )
-    anim.save("octopi.mp4", savefig_kwargs={'facecolor': '#000000'})
+    anim.save("octopi.mp4", savefig_kwargs={"facecolor": "#000000"})
 
 
 @pytest.fixture()
