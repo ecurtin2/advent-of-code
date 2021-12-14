@@ -3,11 +3,10 @@ from dataclasses import dataclass, field
 import pytest
 
 
-
 @dataclass
 class Node:
     name: str
-    connects: list['Node'] = field(default_factory=list)
+    connects: list["Node"] = field(default_factory=list)
 
     def __hash__(self):
         return hash(self.name)
@@ -16,7 +15,7 @@ class Node:
         self.is_small = not all(c.isupper() for c in self.name)
 
     @staticmethod
-    def get_or_create(name, graph: list['Node']) -> 'Node':
+    def get_or_create(name, graph: list["Node"]) -> "Node":
         try:
             return next(n for n in graph if n.name == name)
         except StopIteration:
@@ -24,11 +23,11 @@ class Node:
             graph.append(n)
             return n
 
-    def attach(self, other: 'Node'):
+    def attach(self, other: "Node"):
         self.connects.append(other)
         other.connects.append(self)
 
-    def can_be_added(self, path: list['Node'], can_visit_twice: bool) -> bool:
+    def can_be_added(self, path: list["Node"], can_visit_twice: bool) -> bool:
         if not self.is_small:
             return True
         if self.name == "start":
@@ -47,17 +46,25 @@ class Node:
     def __repr__(self):
         return f"{self.name} -> {[n.name for n in self.connects]}"
 
-    def find_paths_to(self, other: 'Node', can_visit_twice: bool, path=None) -> list[list['Node']]:
+    def find_paths_to(
+        self, other: "Node", can_visit_twice: bool, path=None
+    ) -> list[list["Node"]]:
         if path is None:
             path = [self]
         if self is other:
             return [path]
 
         return sum(
-            (n.find_paths_to(other, can_visit_twice, path + [n], )
-            for n in path[-1].connects
-            if n.can_be_added(path, can_visit_twice)),
-            []
+            (
+                n.find_paths_to(
+                    other,
+                    can_visit_twice,
+                    path + [n],
+                )
+                for n in path[-1].connects
+                if n.can_be_added(path, can_visit_twice)
+            ),
+            [],
         )
 
 
@@ -67,8 +74,8 @@ def get_paths(inputs: str, can_visit_twice: bool) -> list:
     for n1, n2 in pairs:
         Node.get_or_create(n1, graph).attach(Node.get_or_create(n2, graph))
 
-    start = next(n for n in graph if n.name == 'start')
-    end = next(n for n in graph if n.name == 'end')
+    start = next(n for n in graph if n.name == "start")
+    end = next(n for n in graph if n.name == "end")
     return start.find_paths_to(end, can_visit_twice=can_visit_twice)
 
 
@@ -142,11 +149,15 @@ def check_expectations(given, expects: str):
             print(p)
 
     if missing or extra:
-        raise ValueError(f"Missing or extra: got {len(got)} expected {len(expected_paths)}")
+        raise ValueError(
+            f"Missing or extra: got {len(got)} expected {len(expected_paths)}"
+        )
 
 
 def test_p1_short(short):
-    check_expectations(get_paths(short, False), """start,A,b,A,c,A,end
+    check_expectations(
+        get_paths(short, False),
+        """start,A,b,A,c,A,end
 start,A,b,A,end
 start,A,b,end
 start,A,c,A,b,A,end
@@ -155,11 +166,14 @@ start,A,c,A,end
 start,A,end
 start,b,A,c,A,end
 start,b,A,end
-start,b,end""")
+start,b,end""",
+    )
 
 
 def test_p1_medium(medium):
-    check_expectations(get_paths(medium, False), """start,HN,dc,HN,end
+    check_expectations(
+        get_paths(medium, False),
+        """start,HN,dc,HN,end
 start,HN,dc,HN,kj,HN,end
 start,HN,dc,end
 start,HN,dc,kj,HN,end
@@ -177,7 +191,8 @@ start,kj,HN,dc,HN,end
 start,kj,HN,dc,end
 start,kj,HN,end
 start,kj,dc,HN,end
-start,kj,dc,end""")
+start,kj,dc,end""",
+    )
 
 
 def test_p1_long(long):
@@ -185,7 +200,9 @@ def test_p1_long(long):
 
 
 def test_p2_short(short):
-    check_expectations(get_paths(short, True), """start,A,b,A,b,A,c,A,end
+    check_expectations(
+        get_paths(short, True),
+        """start,A,b,A,b,A,c,A,end
 start,A,b,A,b,A,end
 start,A,b,A,b,end
 start,A,b,A,c,A,b,A,end
@@ -220,11 +237,14 @@ start,b,A,end
 start,b,d,b,A,c,A,end
 start,b,d,b,A,end
 start,b,d,b,end
-start,b,end""")
+start,b,end""",
+    )
 
 
 def test_p2_medium():
-    assert p2("""dc-end
+    assert (
+        p2(
+            """dc-end
 HN-start
 start-kj
 dc-start
@@ -233,11 +253,16 @@ LN-dc
 HN-end
 kj-sa
 kj-HN
-kj-dc""") == 103
+kj-dc"""
+        )
+        == 103
+    )
 
 
 def test_p2_long():
-    assert p2("""fs-end
+    assert (
+        p2(
+            """fs-end
 he-DX
 fs-he
 start-DX
@@ -255,4 +280,7 @@ he-WI
 zg-he
 pj-fs
 start-RW
-""") == 3509
+"""
+        )
+        == 3509
+    )
