@@ -1,5 +1,5 @@
 # Advent of Code
 
-```bash
-cargo run <day> <part>
+```
+python -m pytest year2022/d1.py
 ```

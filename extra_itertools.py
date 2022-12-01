@@ -1,5 +1,5 @@
 from collections import deque
-from typing import TypeVar, Iterable, Generator
+from typing import TypeVar, Iterable, Generator, Callable, List
 
 T = TypeVar("T")
 
@@ -23,3 +23,24 @@ def neighbors(i: int, j: int, i_max: int, j_max: int, diagonals: bool = False):
     for p in points:
         if 0 <= p[0] < i_max and 0 <= p[1] < j_max:
             yield p
+
+
+def split(
+        iterable: Iterable,
+        on: Callable = lambda s: s.strip() == "",
+        include_edges: bool = False,
+) -> Generator[List, None, None]:
+    result = []
+    for thing in iterable:
+        if on(thing):
+            if include_edges:
+                result.append(thing)
+            yield result
+            result = []
+        else:
+            result.append(thing)
+
+    # last chunk if exists
+    if result:
+        yield result
+
