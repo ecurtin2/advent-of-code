@@ -1,4 +1,3 @@
-import cattrs
 from sys import argv
 from importlib import import_module
 
@@ -57,7 +56,7 @@ def main(year: int, day: int = None, part: int = None):
 if __name__ == "__main__":
     match argv[1:4]:
         case []:
-            main(2022, 1, 2)
+            main(2022, 2, 2)
         case [year]:
             main(year)
         case [year, day]:
