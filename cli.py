@@ -1,7 +1,7 @@
 from importlib import import_module
 from pathlib import Path
 from timeit import default_timer as timer
-from typing import Optional
+import textwrap
 
 from typer import Typer
 from rich.console import Console
@@ -72,6 +72,47 @@ def main(year: int = 2022, day: int = 0, part: int = 0):
 
     console = Console()
     console.print(table)
+
+
+@App.command("add")
+def add_day(day: int, year: int = 2022):
+    template = textwrap.dedent('''
+    from utils import parse_run
+
+
+    def p1(inputs: list[str]) -> int:
+        return 0
+
+
+    def p2(inputs: list[str]) -> int:
+        return 0
+
+
+    def test_p1():
+        input = """"""
+        assert parse_run(p1, input) == 1
+
+
+    def test_p2():
+        input = """"""
+        assert parse_run(p2, input) == 1
+    
+    ''')
+    py_file = Path(f"year{year}/d{day}.py")
+    py_file.parent.mkdir(exist_ok=True, parents=True)
+    if not py_file.exists():
+        py_file.write_text(template)
+        print(f"Created: {py_file.absolute()}")
+    else:
+        print(f"File already exists: {py_file.absolute()}")
+
+    data_file = Path(f"year{year}/data/d{day}p1.txt")
+    data_file.parent.mkdir(exist_ok=True, parents=True)
+    if data_file.exists():
+        print(f"Data file already exists: {data_file.absolute()}")
+    else:
+        data_file.touch(exist_ok=True)
+        print(f"Created empty data file: {data_file.absolute()}")
 
 
 if __name__ == "__main__":
