@@ -32,7 +32,7 @@ def run(year: int, day: int, part: int):
     return result, end - start
 
 
-@App.command()
+@App.command("run")
 def main(year: int = 2022, day: int = 0, part: int = 0):
 
     year_folder = Path(__file__).parent / f"year{year}"
