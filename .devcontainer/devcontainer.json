@@ -3,5 +3,13 @@
     "dockerComposeFile": "../docker-compose.yaml",
     "service": "dev",
     "workspaceFolder": "/advent-of-code",
-    "shutdownAction": "stopCompose"
+	"shutdownAction": "stopCompose",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"sainnhe.everforest",
+				"ms-python.python"
+			]
+		}
+	}
 }
