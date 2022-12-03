@@ -1,5 +1,5 @@
 FROM python:3.11.0-alpine3.17
-RUN apk add git bash
+RUN apk add git bash just
 RUN pip install poetry
 RUN mkdir /advent-of-code
 WORKDIR /advent-of-code

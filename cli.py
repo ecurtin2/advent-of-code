@@ -33,14 +33,14 @@ def run(year: int, day: int, part: int):
 
 
 @App.command()
-def main(year: int = 2022, day: Optional[int] = None, part: Optional[int] = None):
+def main(year: int = 2022, day: int = 0, part: int = 0):
 
     year_folder = Path(__file__).parent / f"year{year}"
-    if day is None:
+    if day == 0:
         days = sorted(int(p.stem[1:]) for p in year_folder.glob("d*.py"))
     else:
         days = [int(day)]
-    if part is None:
+    if part == 0:
         parts = [1, 2]
     else:
         parts = [int(part)]
@@ -50,8 +50,17 @@ def main(year: int = 2022, day: Optional[int] = None, part: Optional[int] = None
         for part in parts:
             result, duration = run(year, day, part)
             data.append(
-                {"Day": day, "Part": part, "Duration (ms)": f"{duration * 1000:5.2f}", "Answer": result}
+                {
+                    "Day": day,
+                    "Part": part,
+                    "Duration (ms)": f"{duration * 1000:5.2f}",
+                    "Answer": result,
+                }
             )
+
+    if not data:
+        print("No days / parts match, exiting...")
+        exit()
 
     table = Table(title=f"Advent of Code {year} Results")
 
@@ -63,6 +72,7 @@ def main(year: int = 2022, day: Optional[int] = None, part: Optional[int] = None
 
     console = Console()
     console.print(table)
+
 
 if __name__ == "__main__":
     App()
