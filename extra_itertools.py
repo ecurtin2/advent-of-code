@@ -4,16 +4,23 @@ from typing import TypeVar, Iterable, Generator, Callable, List
 T = TypeVar("T")
 
 
-def nwise(n, iterable: Iterable[T]) -> Generator[tuple[T, ...], None, None]:
+def nwise(n, iterable: Iterable[T], step: int =1) -> Generator[tuple[T, ...], None, None]:
+    """Yield length-n chunks of iterable advancing by step"""
     d: deque[T] = deque(maxlen=n)
     it = iter(iterable)
     for _ in range(n):
         d.append(next(it))
 
     yield tuple(d)
-    for val in it:
-        d.append(val)
-        yield tuple(d)
+    if step == 1:
+        for val in it:
+            d.append(val)  
+            yield tuple(d)
+    else:
+        for i, val in enumerate(it, 1):
+            d.append(val)
+            if i % step == 0:
+                yield tuple(d)
 
 
 def neighbors(i: int, j: int, i_max: int, j_max: int, diagonals: bool = False):
