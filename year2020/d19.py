@@ -11,7 +11,9 @@ def part1(inp: List[str]) -> int:
         if '"' in rest:
             rules[int(k)] = rest.replace('"', "").strip()
         else:
-            rules[int(k)] = [[int(i) for i in line.split(" ") if i] for line in rest.split("|")]
+            rules[int(k)] = [
+                [int(i) for i in line.split(" ") if i] for line in rest.split("|")
+            ]
 
     while True:
         resolved_rules = {k: v for k, v in rules.items() if isinstance(v, str)}
@@ -19,14 +21,16 @@ def part1(inp: List[str]) -> int:
         if not unresolved_rules:
             break
 
-        rules = {k: [[resolved_rules.get(v, v) for v in sr] for sr in v] for k, v in unresolved_rules.items()}
+        rules = {
+            k: [[resolved_rules.get(v, v) for v in sr] for sr in v]
+            for k, v in unresolved_rules.items()
+        }
         for k, v in rules.items():
             if all(isinstance(val, str) for sr in v for val in sr):
                 rules[k] = "(" + "|".join(("".join(s for s in sr) for sr in v)) + ")"
 
     return sum(
-        (match := re.match(rules[0], m)) is not None
-        and (match.span(0) == (0, len(m)))
+        (match := re.match(rules[0], m)) is not None and (match.span(0) == (0, len(m)))
         for m in messages
     )
 

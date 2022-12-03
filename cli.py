@@ -1,11 +1,16 @@
-from sys import argv
 from importlib import import_module
-
 from pathlib import Path
 from timeit import default_timer as timer
+from typing import Optional
 
+from typer import Typer
+from rich.console import Console
+from rich.table import Table
 
 from utils import parse_run
+
+
+App = Typer()
 
 
 def run(year: int, day: int, part: int):
@@ -20,15 +25,19 @@ def run(year: int, day: int, part: int):
     if not input_file.is_file():
         input_file = Path(f"year{year}/data/d{day}p1.txt")
 
-    input =  input_file.read_text()
+    input = input_file.read_text()
     result = parse_run(func, input)
 
     end = timer()
     return result, end - start
 
-def main(year: int, day: int = None, part: int = None):
+
+@App.command()
+def main(year: int = 2022, day: Optional[int] = None, part: Optional[int] = None):
+
+    year_folder = Path(__file__).parent / f"year{year}"
     if day is None:
-        days = sorted(int(p.stem[1:]) for p in Path(__file__).parent.glob("d*.py"))
+        days = sorted(int(p.stem[1:]) for p in year_folder.glob("d*.py"))
     else:
         days = [int(day)]
     if part is None:
@@ -36,30 +45,24 @@ def main(year: int, day: int = None, part: int = None):
     else:
         parts = [int(part)]
 
-    print(" Day | Part | Duration | Answer ")
-    print("-----|------|----------|--------")
-
-    durations = []
+    data = []
     for day in days:
         for part in parts:
-            print(f" {day:2}  |  {part}   |", end=" ")
             result, duration = run(year, day, part)
-            durations.append(duration)
-            print(f" {duration:6.4f}", end="")
-            if "hide" in "".join(argv):
-                print(f"  | <redacted>")
-            else:
-                print(f"  | {result}")
+            data.append(
+                {"Day": day, "Part": part, "Duration (ms)": f"{duration * 1000:5.2f}", "Answer": result}
+            )
 
-    print(f"\n Total duration for all parts: {sum(durations):6.4f}")
+    table = Table(title=f"Advent of Code {year} Results")
+
+    for key in data[0]:
+        table.add_column(key)
+
+    for row in data:
+        table.add_row(*[str(v) for v in row.values()])
+
+    console = Console()
+    console.print(table)
 
 if __name__ == "__main__":
-    match argv[1:4]:
-        case []:
-            main(2022, 2, 2)
-        case [year]:
-            main(year)
-        case [year, day]:
-            main(year, day)
-        case [year, day, part]:
-            main(year, day, part)
+    App()

@@ -21,7 +21,7 @@ def solve(inputs: str, n: int) -> int:
 
     # Setup initial state
     initial_state = np.zeros(n_pairs, dtype=np.int64)
-    counts = Counter(''.join(p) for p in zip(polymer, polymer[1:]))
+    counts = Counter("".join(p) for p in zip(polymer, polymer[1:]))
     for pair, count in counts.items():
         initial_state[pair_to_i[pair]] = count
 

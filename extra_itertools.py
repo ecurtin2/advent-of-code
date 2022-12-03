@@ -26,9 +26,9 @@ def neighbors(i: int, j: int, i_max: int, j_max: int, diagonals: bool = False):
 
 
 def split(
-        iterable: Iterable,
-        on: Callable = lambda s: s.strip() == "",
-        include_edges: bool = False,
+    iterable: Iterable,
+    on: Callable = lambda s: s.strip() == "",
+    include_edges: bool = False,
 ) -> Generator[List, None, None]:
     result = []
     for thing in iterable:
@@ -43,4 +43,3 @@ def split(
     # last chunk if exists
     if result:
         yield result
-

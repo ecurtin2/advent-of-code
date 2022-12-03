@@ -1,0 +1,7 @@
+{
+    "name": "AoC",
+    "dockerComposeFile": "../docker-compose.yaml",
+    "service": "dev",
+    "workspaceFolder": "/advent-of-code",
+    "shutdownAction": "stopCompose"
+}

@@ -3,6 +3,7 @@ from inspect import signature
 
 import cattr
 
+
 def is_option(t):
     args = getattr(t, "__args__", tuple())
     return len(args) == 2 and any(arg is type(None) for arg in args)
@@ -13,6 +14,7 @@ def is_list(t):
 
 
 import builtins
+
 
 def parse_input(to, s: str):
     match to:

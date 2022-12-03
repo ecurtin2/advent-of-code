@@ -15,7 +15,7 @@ def diff(iterable):
 
 
 def pop_number(s: str) -> Tuple[Optional[int], str]:
-    """  '1234abcdef' -> (1234, 'abcdef') """
+    """'1234abcdef' -> (1234, 'abcdef')"""
     for i in range(len(s)):
         if not s[: i + 1].isnumeric():
             try:
