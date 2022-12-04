@@ -15,7 +15,7 @@ def parse(inputs: list[str]) -> list[list[tuple[int]]]:
 
 
 def p1(inputs: list[str]) -> int:
-    return sum(overlaps(*p) for p in parse(inputs))
+    return sum(overlaps(*p, total=False) for p in parse(inputs))
 
 
 def p2(inputs: list[str]) -> int:
