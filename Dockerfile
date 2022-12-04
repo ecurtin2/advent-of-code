@@ -7,4 +7,4 @@ ADD poetry.lock pyproject.toml /advent-of-code/
 RUN poetry config virtualenvs.create false && poetry install
 ADD . /advent-of-code/
 
-ENTRYPOINT [ "sleep", "3600" ]
+ENTRYPOINT [ "sleep", "infinity" ]

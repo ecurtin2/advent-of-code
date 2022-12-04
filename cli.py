@@ -79,7 +79,8 @@ def main(year: int = 2022, day: int = 0, part: int = 0):
 
 @App.command("add")
 def add_day(day: int, year: int = 2022):
-    template = textwrap.dedent('''
+    template = textwrap.dedent(
+        '''
     from utils import parse_run
 
 
@@ -100,7 +101,8 @@ def add_day(day: int, year: int = 2022):
         input = """"""
         assert parse_run(p2, input) == 1
     
-    ''')
+    '''
+    )
     py_file = Path(f"year{year}/d{day}.py")
     py_file.parent.mkdir(exist_ok=True, parents=True)
     if not py_file.exists():
