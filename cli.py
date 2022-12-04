@@ -26,7 +26,10 @@ def run(year: int, day: int, part: int):
         input_file = Path(f"year{year}/data/d{day}p1.txt")
 
     input = input_file.read_text()
-    result = parse_run(func, input)
+    if not input.strip():
+        result = "No Input!"
+    else:
+        result = parse_run(func, input)
 
     end = timer()
     return result, end - start
