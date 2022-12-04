@@ -12,15 +12,10 @@ def nwise(n, iterable: Iterable[T], step: int =1) -> Generator[tuple[T, ...], No
         d.append(next(it))
 
     yield tuple(d)
-    if step == 1:
-        for val in it:
-            d.append(val)  
-            yield tuple(d)
-    else:
-        for i, val in enumerate(it, 1):
-            d.append(val)
-            if i % step == 0:
-                yield tuple(d)
+    for val in it:
+        d.append(val)  
+        yield tuple(d)
+
 
 
 def neighbors(i: int, j: int, i_max: int, j_max: int, diagonals: bool = False):

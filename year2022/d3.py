@@ -1,6 +1,5 @@
 from utils import parse_run
 from string import ascii_lowercase, ascii_uppercase
-from extra_itertools import nwise
 
 
 PRIORITY = {l: i for i, l in enumerate(ascii_lowercase + ascii_uppercase, 1)}
@@ -8,6 +7,11 @@ PRIORITY = {l: i for i, l in enumerate(ascii_lowercase + ascii_uppercase, 1)}
 def bisect(l: str) -> tuple[str, str]:
     N = len(l) // 2
     return l[:N], l[N:]
+
+
+def grouper(iterable, n):
+    args = [iter(iterable)] * n
+    return zip(*args)
 
 
 def p1(inputs: list[str]) -> int:
@@ -19,7 +23,7 @@ def p1(inputs: list[str]) -> int:
 
 
 def p2(inputs: list[str]) -> int:
-    groups = nwise(3, map(set, inputs), step=3)
+    groups = grouper(map(set, inputs), 3)
     stickers = [(s1 & s2 & s3).pop() for s1, s2, s3 in groups]
     return sum(PRIORITY[s] for s in stickers)
 
