@@ -17,30 +17,22 @@ class Instruction:
         return Instruction(int(c), f, t)
 
 
-def get(l: list, i: int, default=None):
-    try:
-        return l[i]
-    except IndexError:
-        return default
-
-
-def do(i: Instruction, data: Data, cratemover_version=9000):
+def do(i: Instruction, data: Data, multiple: bool = False):
     moved = [data[i.from_].pop() for _ in range(i.count)]
-    if cratemover_version == 9001:
+    if multiple:
         moved = reversed(moved)
     data[i.to].extend(moved)
 
 
 def parse(inputs: list[str]) -> tuple[Data, list[Instruction]]:
     data, instructions = list(split(inputs, is_none))
-    cols = data.pop().split()
-    indices = range(1, (len(cols) - 1) * 4 + 2, 4)
-    col_idxs = dict(zip(cols, indices))
+    cols = data.pop()
+    col_idxs = {c: cols.index(c) for c in cols.split()}
     column_data = {c: [] for c in col_idxs}
+
     for l in data:
         for col, i in col_idxs.items():
-            val = get(l, i, "").strip()
-            if val:
+            if i <= len(l) and (val := l[i].strip()):
                 column_data[col].append(val)
 
     for col in column_data:
@@ -60,7 +52,7 @@ def p1(inputs: list[str]) -> str:
 def p2(inputs: list[str]) -> str:
     data, instructions = parse(inputs)
     for instruction in instructions:
-        do(instruction, data, cratemover_version=9001)
+        do(instruction, data, multiple=True)
     return "".join(c[-1] for c in data.values())
 
 
