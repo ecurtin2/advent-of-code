@@ -9,6 +9,10 @@ def is_option(t):
     return len(args) == 2 and any(arg is type(None) for arg in args)
 
 
+def is_none(x):
+    return x is None
+
+
 def is_list(t):
     return hasattr(t, "__args__") and not is_option(t)
 
@@ -27,7 +31,7 @@ def parse_input(to, s: str):
             lines = s.splitlines()
             if is_list(inner_t):
                 lines = [l.split() for l in lines]
-            return [cattr.structure(l if l else None, inner_t) for l in lines]
+            return [cattr.structure(l, inner_t) if l else None for l in lines]
     raise ValueError(f"Can't parse to type {to}")
 
 
