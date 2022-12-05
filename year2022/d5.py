@@ -1,6 +1,21 @@
-
+from dataclasses import dataclass
 from utils import parse_run, is_none
 from extra_itertools import split
+
+Data = dict[str, list[str]]
+
+
+@dataclass
+class Instruction:
+    count: int
+    from_: str
+    to: str
+
+    @staticmethod
+    def from_str(s: str):
+        c, f, t = s.replace("move", "").replace("from", "").replace("to", "").split()
+        return Instruction(int(c), f, t)
+
 
 def get(l: list, i: int, default=None):
     try:
@@ -9,12 +24,14 @@ def get(l: list, i: int, default=None):
         return default
 
 
-def pop_move(l: list, to: list, n: int):
-    for _ in range(n):
-        to.append(l.pop())
+def do(i: Instruction, data: Data, cratemover_version=9000):
+    moved = [data[i.from_].pop() for _ in range(i.count)]
+    if cratemover_version == 9001:
+        moved = reversed(moved)
+    data[i.to].extend(moved)
 
 
-def p1(inputs: list[str]) -> int:
+def parse(inputs: list[str]) -> tuple[Data, list[Instruction]]:
     data, instructions = list(split(inputs, is_none))
     cols = data.pop().split()
     indices = range(1, (len(cols) - 1) * 4 + 2, 4)
@@ -29,16 +46,22 @@ def p1(inputs: list[str]) -> int:
     for col in column_data:
         column_data[col].reverse()
 
-    
-    for row in instructions:
-        count, from_, to_ = row.replace("move", "").replace("from", "").replace("to", "").split()
-        pop_move(column_data[from_], column_data[to_], int(count))
-    
-    return "".join(c[-1] for c in column_data.values())
+    instr = [Instruction.from_str(s) for s in instructions]
+    return column_data, instr
 
 
-def p2(inputs: list[str]) -> int:
-    return 0
+def p1(inputs: list[str]) -> str:
+    data, instructions = parse(inputs)
+    for instruction in instructions:
+        do(instruction, data)
+    return "".join(c[-1] for c in data.values())
+
+
+def p2(inputs: list[str]) -> str:
+    data, instructions = parse(inputs)
+    for instruction in instructions:
+        do(instruction, data, cratemover_version=9001)
+    return "".join(c[-1] for c in data.values())
 
 
 def test_p1():
@@ -55,6 +78,13 @@ move 1 from 1 to 2"""
 
 
 def test_p2():
-    input = """"""
-    assert parse_run(p2, input) == 1
+    input = """    [D]    
+[N] [C]    
+[Z] [M] [P]
+ 1   2   3 
 
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2"""
+    assert parse_run(p2, input) == "MCD"
