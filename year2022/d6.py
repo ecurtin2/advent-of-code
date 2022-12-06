@@ -1,28 +1,21 @@
 from extra_itertools import nwise
 from utils import parse_run
+from typing import Callable, TypeVar, Iterable
 import pytest
 
 
-def dropwhile(predicate, iterable):
-    # dropwhile(lambda x: x<5, [1,4,6,4,1]) --> 6 4 1
-    iterable = iter(iterable)
-    for x in iterable:
-        if not predicate(x):
-            yield x
-            break
-    for x in iterable:
-        yield x
+T = TypeVar("T")
+
+
+def first_false(predicate: Callable[[T], bool], iterable: Iterable[T], default: T) -> tuple[int, T]:
+    for i, val in enumerate(iterable):
+        if not predicate(val):
+            return i, val
+    return -1, default
 
 
 def find_marker(input: str, size: int) -> int:
-    return (
-        next(
-            dropwhile(
-                lambda x: len(set(x[1])) != len(x[1]), enumerate(nwise(size, input))
-            )
-        )[0]
-        + size
-    )
+    return first_false(lambda x: len(set(x)) != len(x), nwise(size, input), default=())[0] + size
 
 
 def p1(inputs: str) -> int:
