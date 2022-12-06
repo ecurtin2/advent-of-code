@@ -40,7 +40,7 @@ def run(year: int, day: int, part: int, reps: int = 1):
 
 
 @App.command("run")
-def main(year: int = 2022, day: int = 0, part: int = 0):
+def main(year: int = 2022, day: int = 0, part: int = 0, reps: int = 5):
 
     year_folder = Path(__file__).parent / f"year{year}"
     if day == 0:
@@ -55,7 +55,7 @@ def main(year: int = 2022, day: int = 0, part: int = 0):
     data = []
     for day in days:
         for part in parts:
-            result, duration = run(year, day, part, reps=5)
+            result, duration = run(year, day, part, reps=reps)
             data.append(
                 {
                     "Day": day,
