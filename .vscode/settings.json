@@ -1,5 +1,6 @@
 {
     "python.linting.enabled": true,
     "files.autoSave": "afterDelay",
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "basic",
+    "editor.minimap.enabled": false,
 }
