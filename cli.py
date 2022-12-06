@@ -1,6 +1,7 @@
 from importlib import import_module
 from pathlib import Path
 from timeit import default_timer as timer
+from statistics import mean, stdev
 import textwrap
 
 from typer import Typer
@@ -13,26 +14,29 @@ from utils import parse_run
 App = Typer()
 
 
-def run(year: int, day: int, part: int):
+def run(year: int, day: int, part: int, reps: int = 1):
     mod = import_module(f"year{year}.d{day}")
     func = getattr(mod, f"p{part}")
+    times = []
+    result = None
+    for _ in range(reps):
+        start = timer()
 
-    input_file = Path(f"year{year}/data/d{day}p{part}.txt")
+        input_file = Path(f"year{year}/data/d{day}p{part}.txt")
+        # Fallback on part 1 since often reused
+        if not input_file.is_file():
+            input_file = Path(f"year{year}/data/d{day}p1.txt")
 
-    start = timer()
+        input = input_file.read_text()
+        if not input.strip():
+            result = "No Input!"
+        else:
+            result = parse_run(func, input)
 
-    # Fallback on part 1 since often reused
-    if not input_file.is_file():
-        input_file = Path(f"year{year}/data/d{day}p1.txt")
-
-    input = input_file.read_text()
-    if not input.strip():
-        result = "No Input!"
-    else:
-        result = parse_run(func, input)
-
-    end = timer()
-    return result, end - start
+        end = timer()
+        times.append(end - start)
+    
+    return result, (mean(times), stdev(times) if len(times) >= 2 else 0)
 
 
 @App.command("run")
@@ -51,12 +55,12 @@ def main(year: int = 2022, day: int = 0, part: int = 0):
     data = []
     for day in days:
         for part in parts:
-            result, duration = run(year, day, part)
+            result, duration = run(year, day, part, reps=5)
             data.append(
                 {
                     "Day": day,
                     "Part": part,
-                    "Duration (ms)": f"{duration * 1000:5.2f}",
+                    "Duration (ms)": f"{duration[0] * 1000:5.2f} +/- {duration[1]:5.4f}",
                     "Answer": result,
                 }
             )
