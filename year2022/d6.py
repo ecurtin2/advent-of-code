@@ -7,7 +7,9 @@ import pytest
 T = TypeVar("T")
 
 
-def first_false(predicate: Callable[[T], bool], iterable: Iterable[T], default: T) -> tuple[int, T]:
+def first_false(
+    predicate: Callable[[T], bool], iterable: Iterable[T], default: T
+) -> tuple[int, T]:
     for i, val in enumerate(iterable):
         if not predicate(val):
             return i, val
@@ -15,7 +17,10 @@ def first_false(predicate: Callable[[T], bool], iterable: Iterable[T], default: 
 
 
 def find_marker(input: str, size: int) -> int:
-    return first_false(lambda x: len(set(x)) != len(x), nwise(size, input), default=())[0] + size
+    return (
+        first_false(lambda x: len(set(x)) != len(x), nwise(size, input), default=())[0]
+        + size
+    )
 
 
 def p1(inputs: str) -> int:
