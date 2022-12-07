@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from functools import cache
 from utils import parse_run
 from typing import Optional
 
@@ -82,15 +81,9 @@ def p2(inputs: list[str]) -> int:
     root = parse(inputs)
     total_disk = 70_000_000
     update_size = 30_000_000
-    unused = total_disk - root.total_size()
-    needed = update_size - unused
-
-    dir_sizes = [
-        d.total_size()
-        for _, d in root.iter_tree()
-        if d.is_dir and d.total_size() > needed
-    ]
-    return min(dir_sizes)
+    needed = update_size - (total_disk - root.total_size())
+    sizes = (d.total_size() for _, d in root.iter_tree() if d.is_dir)
+    return min(s for s in sizes if s > needed)
 
 
 def test_p1():
