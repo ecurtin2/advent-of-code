@@ -46,3 +46,19 @@ def split(
     # last chunk if exists
     if result:
         yield result
+
+
+def take_until(pred, iterable):
+    """Yield until the predicate is true"""
+    for val in iterable:
+        yield val
+        if pred(val):
+            break
+
+
+def last(iterable, default=0):
+    """Return the last value in iterable, or default"""
+    val = default
+    for val in iterable:
+        pass
+    return val

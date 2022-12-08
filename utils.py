@@ -31,6 +31,11 @@ def parse_input(to, s: str):
             lines = s.splitlines()
             if is_list(inner_t):
                 lines = [l.split() for l in lines]
+                # Getting hacky but its aoc whatever
+                # If we didn't really split on white space
+                if len(lines[0]) == 1:
+                    lines = [list(l[0]) for l in lines]
+
             return [cattr.structure(l, inner_t) if l else None for l in lines]
     raise ValueError(f"Can't parse to type {to}")
 
