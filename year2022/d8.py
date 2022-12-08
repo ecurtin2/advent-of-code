@@ -27,6 +27,7 @@ def p1(inputs: list[list[int]]) -> int:
 
     return sum(chain.from_iterable(visible))
 
+
 def scenic_score(trees, i0, j0):
     n_i, n_j = len(trees), len(trees[0])
     ranges = [
