@@ -1,9 +1,9 @@
-
 from utils import parse_run
 from itertools import chain
 from math import atan2, isclose, cos, sin, ceil, floor, sqrt
 
-def round_away(x: float) -> int: 
+
+def round_away(x: float) -> int:
     """If x is nearly round, round it, otherwise round away from 0"""
     if isclose(x, float(round(x)), abs_tol=0.01):
         rounded = round(x)
@@ -15,7 +15,7 @@ def round_away(x: float) -> int:
 def advance(tail, head):
     dx = (head[0] - tail[0], head[1] - tail[1])
     # Do nothing if neighboring (includes diag where magnitude = sqrt(2) = 1.1414)
-    if sqrt(dx[0]**2 + dx[1]**2) > 1.42:
+    if sqrt(dx[0] ** 2 + dx[1] ** 2) > 1.42:
         theta = atan2(dx[1], dx[0])
         dt = cos(theta), sin(theta)
         dt = round_away(dt[0]), round_away(dt[1])
@@ -29,13 +29,8 @@ def solve(inputs: list[str], rope_length: int) -> int:
     parsed = (((s := l.split())[0], int(s[1])) for l in inputs)
     directions = chain.from_iterable((d for _ in range(m)) for d, m in parsed)
     visited = set()
-    dir2coord = {
-        "U": (0, 1),
-        "D": (0, -1),
-        "L": (-1, 0),
-        "R": (1, 0)
-    }
-    
+    dir2coord = {"U": (0, 1), "D": (0, -1), "L": (-1, 0), "R": (1, 0)}
+
     for direction in directions:
         dh = dir2coord[direction]
         rope[0] = rope[0][0] + dh[0], rope[0][1] + dh[1]
@@ -87,4 +82,3 @@ D 10
 L 25
 U 20"""
     assert parse_run(p2, input) == 36
-

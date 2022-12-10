@@ -1,4 +1,3 @@
-
 from itertools import chain
 from math import prod
 
@@ -10,12 +9,12 @@ def p1(inputs: list[list[int]]) -> int:
     visible = [[0 for _ in inputs[0]] for _ in inputs]
     M = len(visible)
     N = len(visible[0])
-    
+
     idx_dirs = (
-        [[(i, j) for j in range(N)] for i in range(M)] # Left
-        + [[(i, j) for j in range(N - 1, -1, -1)] for i in range(M)]     # Right
-        + [[(i, j) for i in range(M)] for j in range(N)]    # Top
-        + [[(i, j) for i in range(M - 1, -1, -1)] for j in range(N)]    # Bottom
+        [[(i, j) for j in range(N)] for i in range(M)]  # Left
+        + [[(i, j) for j in range(N - 1, -1, -1)] for i in range(M)]  # Right
+        + [[(i, j) for i in range(M)] for j in range(N)]  # Top
+        + [[(i, j) for i in range(M - 1, -1, -1)] for j in range(N)]  # Bottom
     )
 
     for idxs in idx_dirs:
@@ -31,17 +30,25 @@ def p1(inputs: list[list[int]]) -> int:
 def scenic_score(trees, i0, j0):
     n_i, n_j = len(trees), len(trees[0])
     ranges = [
-        zip(range(i0, -1, -1), [j0] * n_j),       # up
-        zip([i0] * n_i, range(j0, -1, -1)),       # left
-        zip(range(i0, len(trees)), [j0] * n_j),   # down
-        zip([i0] * n_i, range(j0, len(trees[0]))) # right
+        zip(range(i0, -1, -1), [j0] * n_j),  # up
+        zip([i0] * n_i, range(j0, -1, -1)),  # left
+        zip(range(i0, len(trees)), [j0] * n_j),  # down
+        zip([i0] * n_i, range(j0, len(trees[0]))),  # right
     ]
-    visible_ranges = (take_until(lambda x: (x != (i0, j0)) and (trees[x[0]][x[1]] >= trees[i0][j0]), r) for r in ranges)
+    visible_ranges = (
+        take_until(
+            lambda x: (x != (i0, j0)) and (trees[x[0]][x[1]] >= trees[i0][j0]), r
+        )
+        for r in ranges
+    )
     return prod(last(i for i, _ in enumerate(r)) for r in visible_ranges)
 
 
 def p2(inputs: list[list[int]]) -> int:
-    scores = [[scenic_score(inputs, i, j) for j in range(len(inputs))] for i in range(len(inputs[0]))]
+    scores = [
+        [scenic_score(inputs, i, j) for j in range(len(inputs))]
+        for i in range(len(inputs[0]))
+    ]
     return max(chain.from_iterable(scores))
 
 
@@ -61,4 +68,3 @@ def test_p2():
 33549
 35390"""
     assert parse_run(p2, input) == 8
-
