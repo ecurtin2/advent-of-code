@@ -1,7 +1,43 @@
 from dataclasses import dataclass
 from utils import parse_run
 from math import lcm
-from functools import lru_cache
+from typing import Union
+
+
+ModIntAble = Union["ModularInt", int]
+
+
+class ModularInt:
+    def __init__(self, value: int, mod: int):
+        self.value = value % mod
+        self.mod = mod
+
+    def __add__(self, other: ModIntAble) -> "ModularInt":
+        if isinstance(other, int):
+            return ModularInt(self.value + other, self.mod)
+        elif isinstance(other, ModularInt):
+            if self.mod == other.mod:
+                return ModularInt(self.value + other.value, self.mod)
+            else:
+                raise NotImplemented(f"I didn't find this or need it")
+        else:
+            raise TypeError(f"Unsupported: {other} (type={type(other)})")
+
+    def __mul__(self, other: ModIntAble) -> "ModularInt":
+        if isinstance(other, int):
+            return ModularInt(self.value * other, self.mod)
+        elif isinstance(other, ModularInt):
+            return ModularInt(self.value * other.value, self.mod)
+
+    def __floordiv__(self, other):
+        # Is this even right idk but it works for this problem?
+        return ModularInt(self.value // other, self.mod)
+
+    def __mod__(self, value):
+        return self.value % value
+
+    def __str__(self):
+        return f"{self.value} mod {self.mod}"
 
 
 class Operation:
@@ -9,7 +45,7 @@ class Operation:
         self.s = s.split("=")[1]
         match self.s.split():
             case ["old", "*", "old"]:
-                self.func = lambda x: x**2
+                self.func = lambda x: x * x
             case ["old", "*", x]:
                 self.func = lambda old: old * int(x)
             case ["old", "+", x]:
@@ -30,7 +66,7 @@ MONKEYS: dict[int, "Monkey"] = dict()
 @dataclass
 class Monkey:
     id: int
-    items: list[int]
+    items: list[ModularInt]
     operation: Operation
     test_divisible: int
     if_true: int
@@ -41,23 +77,19 @@ class Monkey:
         MONKEYS[self.id] = self
 
     @staticmethod
-    def from_list(chunk: list[str]) -> "Monkey":
+    def from_list(chunk: list[str], modulo: int) -> "Monkey":
+        items = [ModularInt(int(v), modulo) for v in chunk[1].split(":")[1].split(",")]
         return Monkey(
             id=int(chunk[0].split()[1][:-1]),
-            items=list(map(int, chunk[1].split(":")[1].split(","))),
+            items=items,
             operation=Operation(chunk[2]),
             test_divisible=int(chunk[3].split()[-1]),
             if_true=int(chunk[4].split()[-1]),
             if_false=int(chunk[5].split()[-1]),
         )
 
-    def throw(self, item: int, other: int):
+    def throw(self, item: ModIntAble, other: int):
         MONKEYS[other].items.append(item)
-
-    @lru_cache
-    @staticmethod
-    def divisor_lcm():
-        return lcm(*[m.test_divisible for m in MONKEYS.values()])
 
     def inspect(self, reduce_worry: bool):
         for item in self.items:
@@ -65,10 +97,6 @@ class Monkey:
             worry = self.operation(item)
             if reduce_worry:
                 worry //= 3
-            else:
-                # Use LCM of divisers to preserve modulus upon add+mul
-                worry %= Monkey.divisor_lcm()
-
             if (worry % self.test_divisible) == 0:
                 self.throw(worry, self.if_true)
             else:
@@ -77,7 +105,11 @@ class Monkey:
 
 
 def solve(inputs: list[str], rounds: int, reduce_worry: bool) -> int:
-    monkeys = [Monkey.from_list(inputs[i : i + 6]) for i in range(0, len(inputs), 7)]
+    divisibles = [int(l.split()[-1]) for l in inputs if l and "divisible" in l]
+    mod = lcm(*divisibles)
+    monkeys = [
+        Monkey.from_list(inputs[i : i + 6], mod) for i in range(0, len(inputs), 7)
+    ]
     for _ in range(rounds):
         for monkey in monkeys:
             monkey.inspect(reduce_worry=reduce_worry)
