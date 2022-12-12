@@ -35,12 +35,18 @@ def run(year: int, day: int, part: int, reps: int = 1):
 
         end = timer()
         times.append(end - start)
-    
+
     return result, (mean(times), stdev(times) if len(times) >= 2 else 0)
 
 
 @App.command("run")
-def main(year: int = 2022, day: int = 0, part: int = 0, reps: int = 5):
+def main(
+    year: int = 2022,
+    day: int = 0,
+    part: int = 0,
+    reps: int = 1,
+    hide_answers: bool = False,
+):
 
     year_folder = Path(__file__).parent / f"year{year}"
     if day == 0:
@@ -56,14 +62,19 @@ def main(year: int = 2022, day: int = 0, part: int = 0, reps: int = 5):
     for day in days:
         for part in parts:
             result, duration = run(year, day, part, reps=reps)
+            if reps > 1:
+                d_str = f"{duration[0] * 1000:5.2f} +/- {duration[1]:5.4f}"
+            else:
+                d_str = f"{duration[0] * 1000:5.2f}"
             data.append(
                 {
                     "Day": day,
                     "Part": part,
-                    "Duration (ms)": f"{duration[0] * 1000:5.2f} +/- {duration[1]:5.4f}",
-                    "Answer": result,
+                    "Duration (ms)": d_str,
                 }
             )
+            if not hide_answers:
+                data[-1]["Answer"] = result
 
     if not data:
         print("No days / parts match, exiting...")
