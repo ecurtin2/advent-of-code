@@ -14,8 +14,12 @@ def nwise(
         d.append(next(it))
 
     yield tuple(d)
-    for val in it:
-        d.append(val)
+    while True:
+        try:
+            for _ in range(step):
+                d.append(next(it))
+        except StopIteration:
+            return
         yield tuple(d)
 
 
