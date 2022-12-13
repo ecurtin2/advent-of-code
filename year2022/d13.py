@@ -5,19 +5,10 @@ from math import prod
 from functools import cmp_to_key
 
 
-def sign(x: int):
-    if x == 0:
-        return 0
-    elif x > 0:
-        return 1
-    else:
-        return -1
-
-
 def cmp(l: list | int, r: list | int) -> int:
     """1 = right   -1 = wrong   0 = indeterminate"""
     if isinstance(l, int) and isinstance(r, int):
-        return sign(r - l)
+        return 0 if (diff := (r - l)) == 0 else diff // abs(diff)
     if isinstance(r, int):
         return cmp(l, [r])
     if isinstance(l, int):

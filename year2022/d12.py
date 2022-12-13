@@ -1,6 +1,7 @@
 from utils import parse_run
 from extra_itertools import neighbors
 from rich.console import Console
+from heapq import heappop, heappush
 
 console = Console()
 
@@ -23,27 +24,25 @@ class Graph:
             ):
                 d = height(val) - height(self.data[neighbor[0]][neighbor[1]])
                 if (not backwards) and (d >= -1):
-                    self.connections.setdefault(node, set()).add(neighbor)
+                    self.connections.setdefault(node, set()).add((neighbor, 1))
                 elif backwards and (d <= 1):
-                    self.connections.setdefault(node, set()).add(neighbor)
+                    self.connections.setdefault(node, set()).add((neighbor, 1))
 
     def __getitem__(self, idxs):
         return self.data[idxs[0]][idxs[1]]
 
     def find_distances(self, start: tuple[int, int]):
-        unvisited = set(n[0] for n in self.nodes())
-        INFINITY = 999_999
-        distances = {n[0]: INFINITY for n in self.nodes()}
-        distances[start] = 0
-        current = start
-        unvisited.remove(start)
-        while unvisited:
-            for node in set(self.connections.get(current, set())):
-                distances[node] = min(distances[current] + 1, distances[node])
-            candidates = (d for d in distances.items() if d[0] in unvisited)
-            min_d = min(candidates, key=lambda x: x[1])
-            current = min_d[0]
-            unvisited.remove(current)
+        """dijkstra"""
+        distances = dict()
+        queue = [(0, start)]
+        while queue:
+            d, node = heappop(queue)
+            if node in distances:
+                continue
+            distances[node] = d
+            for n, w in set(self.connections.get(node, {})):
+                if n not in distances:
+                    heappush(queue, (d + w, n))
         return distances
 
     def show(self, mask=None):
