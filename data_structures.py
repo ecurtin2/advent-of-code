@@ -1,13 +1,12 @@
 from typing import Any
 from itertools import product
-from sortedcontainers import SortedDict
 
 
 class Grid:
     def __init__(self):
         # Column major sparse dict
         # Key = (col_i, row_i)
-        self._data: SortedDict = SortedDict()
+        self._data: dict = dict()
         self.min_row: None | int = None
         self.max_row: None | int = None
         self.min_col: None | int = None
@@ -23,21 +22,6 @@ class Grid:
         self.min_row = min(self.min_row if self.min_row is not None else row_i, row_i)
         self.max_col = max(self.max_col if self.max_col is not None else col_i, col_i)
         self.min_col = min(self.min_col if self.min_col is not None else col_i, col_i)
-
-    def find_below(self, x: int, y: int):
-        if isinstance(self._data, SortedDict):
-            r = self._data.bisect_right((x, y))
-            result = self._data.peekitem(r)
-            if result[0][0] != x:
-                result = None
-        else:
-            try:
-                min_k = min(k for k in self._data.keys() if k[0] == x and k[1] > y)
-                result = min_k, self._data[min_k]
-            except ValueError:
-                result = None
-        return result
-
 
     def __setitem__(self, idx: tuple[slice | int, slice | int], val: Any):
         col_idx, row_idx = idx
